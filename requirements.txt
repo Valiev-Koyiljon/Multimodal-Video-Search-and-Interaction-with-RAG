@@ -1,0 +1,38 @@
+# Environment management
+python-dotenv==1.0.1  # For loading environment variables from .env files
+
+# Image processing
+Pillow==10.3.0  # Python Imaging Library for image processing
+opencv-python==4.10.0.82  # Computer vision library
+
+# Data science & ML
+numpy==1.26.4  # Fundamental package for numerical computing
+pandas==2.2.2  # Data manipulation and analysis
+scikit-learn==1.5.1  # Machine learning library
+umap-learn==0.5.6  # Dimensionality reduction
+matplotlib==3.9.1  # Plotting library
+seaborn==0.13.2  # Statistical data visualization
+
+# LLM & AI
+langchain==0.2.4  # Framework for developing LLM applications
+langchain-community==0.2.4  # Community components for LangChain
+langchain-core==0.2.6  # Core LangChain functionalities
+langchain-text-splitters==0.2.1  # Text splitting utilities
+predictionguard==2.1.0  # ML model monitoring and management
+datasets==2.20.0  # Easy access to ML datasets
+
+# Vector Database
+lancedb==0.8.2  # Vector database for ML applications
+
+# Video & Audio Processing
+moviepy==1.0.3  # Video editing
+pytube==15.0.0  # YouTube video downloader
+pytubefix==6.5.2  # Fixed fork of pytube
+youtube-transcript-api==0.6.2  # YouTube transcript access
+webvtt-py==0.5.1  # WebVTT subtitle format support
+
+# UI & Deployment
+gradio==4.44.0  # Web interface creation for ML models
+
+# Recommended Addition:
+# openai-whisper==20231117  # Speech recognition model from OpenAI
