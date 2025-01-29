@@ -35,4 +35,4 @@ webvtt-py==0.5.1  # WebVTT subtitle format support
 gradio==4.44.0  # Web interface creation for ML models
 
 # Recommended Addition:
-# openai-whisper==20231117  # Speech recognition model from OpenAI
+openai-whisper  # Speech recognition model from OpenAI
