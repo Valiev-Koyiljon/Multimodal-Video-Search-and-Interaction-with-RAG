@@ -1,4 +1,4 @@
-Here's the revised complete version with the images and certificate details:
+
 
 # Project Overview
 This is a system that lets you have intelligent conversations about video content. Think of it as a smart video assistant that can understand and answer questions about videos. The system uses a technique called Multimodal RAG (Retrieval-Augmented Generation) to process both visual and audio content from videos.
