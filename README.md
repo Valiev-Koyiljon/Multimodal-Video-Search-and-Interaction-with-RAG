@@ -1,50 +1,42 @@
-# Multimodal Retrieval-Augmented Generation (RAG) Chat with Videos
+This repository contains my implementation of a **Multimodal Retrieval-Augmented Generation (RAG) system for video content interaction**, developed as part of the [Multimodal RAG: Chat with Videos](https://www.deeplearning.ai/short-courses/multimodal-rag-chat-with-videos/) course by DeepLearning.AI in collaboration with Intel. The system enables **intelligent querying and interaction with video content** using **multimodal AI techniques**, including video frame extraction, transcription, multimodal embedding, and retrieval.
 
-This project demonstrates a question-answering system using multimodal data, allowing users to ask questions and retrieve information from a collection of ingested videos. The system utilizes the API of [Prediction Guard](https://predictionguard.com/), but it can be adapted to use other model hosting providers.
+## Certificate of Completion
 
-## Overview
-The process consists of multiple steps, starting with video preprocessing, followed by ingestion into a vector database, and finally, retrieval and response generation through a multimodal RAG system. Users can interact with the system via:
-- A Python program (STEP_3a)
-- A web interface powered by [Gradio](https://www.gradio.app/) (STEP_3b)
+I successfully completed the course! You can view my certificate [here](https://learn.deeplearning.ai/accomplishments/12b98ae0-cf49-4aa6-bb0a-7431fa9232a7?usp=sharing).
 
-The Gradio interface is accessible at: `http://localhost:9999`
+## STEP 1: Video preprocessing for ingestion ("STEP_1-preprocessing_videos.py")
 
-## System Components
-This system uses the following technologies:
-- **BridgeTower embedding model**: Embeds text and images into a common semantic space.
-- **LanceDB**: A local vector database for storing extracted video data.
-- **Large Vision-Language Model (LVLM)**: A model combining visual and textual understanding for retrieval tasks.
-- **LLaVA (Large Language and Vision Assistant)**: A powerful multimodal model integrating CLIP’s vision capabilities with LLaMA’s textual understanding.
+This step processes 3 different kinds of input videos:
 
-## Steps
-### STEP 1: Video Preprocessing (`STEP_1-preprocessing_videos.py`)
-This step processes three types of video inputs:
+1. Case 1: Video and transcript (commonly in WEBVTT format) are both available. The WEBVTT format consists of sequences of time segments associated with time intervals. In this case, the [OpenCV](https://opencv.org/) library is used to extract video frames using the WEBVTT time stamps. Each text segment gets associated with a central video frame and metadata.
 
-1. **Videos with transcripts (WEBVTT format)**
-   - Extracts frames from the video based on the transcript’s timestamps.
-   - Associates each extracted frame with metadata including:
-     - Frame path
-     - Transcript
-     - Video segment ID
-     - Video path
-     - Timestamp (in milliseconds)
+   For each video segment, the following gets extracted:
 
-2. **Videos with audio but no transcript**
-   - Uses [OpenAI's Whisper](https://github.com/openai/whisper) model for transcription.
-   - Converts the transcript into WEBVTT format for further processing.
+   - A frame right at the middle of the time frame of the video segment
+   - Its metadata including:  
+     `extracted_frame_path`: Path to the saved extracted frame  
+     `transcript`: Transcript of the extracted frame  
+     `video_segment_id`: The order of the video segment from which the frame was extracted  
+     `video_path`: Path to the video from which the frame was extracted. This helps retrieving the correct video when there are multiple videos.  
+     `mid_time_ms`: Time stamp (in ms) of the extracted frame
 
-3. **Videos with no audio and no transcript**
-   - Splits the video into frames.
-   - Uses the LLaVA model to generate captions from extracted frames.
+2. Case 2: Video with audio is available, but no transcript. In this case, OpenAI's [whisper](https://github.com/openai/whisper) model is used to generate a transcription. Because the whisper model needs an audio file (mp3) as input, the [MoviePy](https://github.com/Zulko/moviepy) library is used to extract audio from the video. The text output from the whisper model is then processed to the WEBVTT format.
 
-### STEP 2: Data Ingestion into LanceDB (`STEP_2-vector_store_ingestion.py`)
-This step embeds the processed video data into a local LanceDB vector database using `BridgeTower/bridgetower-large`. The system optimizes transcript retrieval by:
-- Augmenting fragmented transcripts with neighboring frames’ transcripts to ensure completeness.
-- Experimenting with different augmentation strategies to maximize retrieval effectiveness.
+3. Case 3: Video with no audio and no transcript (for example silent videos or videos with just background music). In this case, the video gets split into frames and the LLaVA model is used to generate captions from the video frames.
 
-### STEP 3: Running the Multimodal RAG System
+## STEP 2: Ingestion into the LanceDB vector database ("STEP_2-vector_store_ingestion.py")
 
-The retrieval system is implemented as a LangChain processing chain:
+Step 2 uses `BridgeTower/bridgetower-large` as embedding model to ingest the data from Step 1 into a local LanceDB vector database.
+
+The transcripts of frames extracted from a video are usually fragmented and can have incomplete sentences. Such transcripts are often not meaningful and are therefore not helpful for retrieval. In addition, long transcripts that include a lot of information are also not helpful. A simple solution to this issue is to augment such a transcript with the transcripts of "n" neighbouring frames. It is advised to pick an individual "n" (integer number) for each video, so that the updated transcript contains one or two meaningful facts. It is OK to have updated transcripts of neighbouring frames overlapped with each other. Changing the transcriptions which will be ingested into the vector database along with their corresponding frames will affect the performance. It is best to experiment with each video to get the best performance.
+
+## Steps 3a and Step 3b: Run a multimodal RAG system as a chain in LangChain
+
+- The `RunnableParallel` primitive is essentially a dict whose values are runnables (or things that can be coerced to runnables, like functions). It runs all of its values in parallel, and each value is called with the overall input of the `RunnableParallel`. The final return value is a dict with the results of each value under its appropriate key.
+- The `RunnablePassthrough` on its own allows to pass inputs unchanged. This is typically used in conjunction with `RunnableParallel` to pass data through to a new key in the map.
+- The `RunnableLambda` converts a Python function into a runnable. Wrapping a function in a `RunnableLambda` makes the function usable within either a sync or async context.
+
+The chain where LangChain combines the modules is:
 
 ```
 mm_rag_chain = (
@@ -57,46 +49,26 @@ mm_rag_chain = (
 )
 ```
 
-#### STEP 3a: Querying via Python (`STEP_3a-rag_with_langchain.py`)
-- Runs queries programmatically in Python.
-- Returns text-based responses with relevant retrieved frames and metadata.
+### STEP 3a: RAG with LangChain using Python program code ("STEP_3a-rag_with_langchain.py")
 
-#### STEP 3b: Querying via Gradio Web Interface (`STEP_3b-web_interface.py`)
-- Provides a user-friendly GUI.
-- Displays retrieved images along with text responses.
-- Allows follow-up questions within the context of a selected video.
-- Includes a "Clear history" button to reset the query context.
+Step 3a contains several example queries about the ingested videos using Python program code. This is the text-based version of Step 3b. Images are shown separately.
 
-## API Key Requirements
-To use this system, you need API keys for:
-1. **OpenAI** ([Get your key here](https://platform.openai.com/login))
-2. **Prediction Guard** ([Get your free key here](https://predictionguard.com/get-started))
+### STEP 3b: Using the Gradio web interface for RAG ("STEP_3b-web_interface.py")
 
-Add these keys to a `.env` file as follows:
-```
-OPENAI_API_KEY=your_openai_api_key
-PREDICTION_GUARD_API_KEY=your_prediction_guard_api_key
-```
+Step 3b contains several example queries about the ingested video data via the Gradio web interface. This is the Graphical User Interface (GUI) version of Step 3a. It will take some time to generate the answers, so please be patient.
 
-### API Rate Limits
-Some Prediction Guard trial API keys may have a rate limit (e.g., 1–2 requests per second). If your key has this limitation, you need to include `time.sleep()` statements in your scripts to avoid `429 Too Many Requests` errors. If your key has no such limitation, you can remove the existing `time.sleep(1.5)` statements in `utils.py` to speed up execution.
+Follow-up questions will be answered in the context of the currently selected video. To start a new unrelated query, click the "Clear history" button first.
 
-## FFmpeg Requirement
-The system requires **FFmpeg**, a tool for processing audio and video. Install it from the [official FFmpeg website](https://www.ffmpeg.org/).
+## Required API keys for this example
 
-For Windows users:
-- Download `ffmpeg.exe` and place it in the project directory.
+This example requires API keys from both OpenAI and Prediction Guard.
 
-For Linux users:
-- Install a static build if package installation fails ([get it here](https://johnvansickle.com/ffmpeg/)).
+You need to insert these 2 pieces of information into the `.env.example` file and then rename this file to just `.env` (remove the ".example" ending).
 
-If FFmpeg is missing, you may encounter errors like:
-```
-FileNotFoundError: The system cannot find the file specified
-```
-This means the FFmpeg executable is not found, not that the input video is missing.
+- [Get your OpenAI API key here](https://platform.openai.com/login).
+- [Get your free Prediction Guard API key here](https://predictionguard.com/get-started). You will need to fill in the form and ask Prediction Guard to provide you with a free API key for your trial use case.
 
----
+## Free Prediction Guard API key limitations
 
-This project provides a powerful framework for building multimodal retrieval-augmented generation systems with videos. Experiment with transcript augmentation, embedding strategies, and retrieval parameters to optimize performance for your specific use case.
+Some Prediction Guard trial API keys are limited to 1 or 2 request(s) per second. If your Prediction Guard API key has this limitation, then you must include `time.sleep()` statements, otherwise you might get http status code 429 "Too Many Requests" responses. If your Prediction Guard API key does not have this limitation, then you can remove the existing `time.sleep(1.5)` statements in the `utils.py` file. This will improve the script execution times.
 
