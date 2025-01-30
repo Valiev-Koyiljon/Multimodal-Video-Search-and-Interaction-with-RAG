@@ -68,4 +68,4 @@ mm_rag_chain = (
 
 This system was created as part of a DeepLearning.AI course on Multimodal RAG systems, focusing on video content interaction.
 
-Would you like me to explain any specific part in more detail?
+
