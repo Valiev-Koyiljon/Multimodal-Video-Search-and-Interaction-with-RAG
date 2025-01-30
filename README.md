@@ -4,7 +4,7 @@ This repository contains my implementation of a **Multimodal Retrieval-Augmented
 
 I successfully completed the course! You can view my certificate [here](https://learn.deeplearning.ai/accomplishments/12b98ae0-cf49-4aa6-bb0a-7431fa9232a7?usp=sharing).
 
-## STEP 1: Video preprocessing for ingestion ("STEP_1-preprocessing_videos.py")
+## STEP 1: Video preprocessing for ingestion ("1-preprocessing_videos.py")
 
 This step processes 3 different kinds of input videos:
 
@@ -24,7 +24,7 @@ This step processes 3 different kinds of input videos:
 
 3. Case 3: Video with no audio and no transcript (for example silent videos or videos with just background music). In this case, the video gets split into frames and the LLaVA model is used to generate captions from the video frames.
 
-## STEP 2: Ingestion into the LanceDB vector database ("STEP_2-vector_store_ingestion.py")
+## STEP 2: Ingestion into the LanceDB vector database ("2-vector_store_ingestion.py")
 
 Step 2 uses `BridgeTower/bridgetower-large` as embedding model to ingest the data from Step 1 into a local LanceDB vector database.
 
@@ -49,11 +49,11 @@ mm_rag_chain = (
 )
 ```
 
-### STEP 3a: RAG with LangChain using Python program code ("STEP_3a-rag_with_langchain.py")
+### STEP 3a: RAG with LangChain using Python program code ("3a-rag_with_langchain.py")
 
 Step 3a contains several example queries about the ingested videos using Python program code. This is the text-based version of Step 3b. Images are shown separately.
 
-### STEP 3b: Using the Gradio web interface for RAG ("STEP_3b-web_interface.py")
+### STEP 3b: Using the Gradio web interface for RAG ("3b-web_interface.py")
 
 Step 3b contains several example queries about the ingested video data via the Gradio web interface. This is the Graphical User Interface (GUI) version of Step 3a. It will take some time to generate the answers, so please be patient.
 
