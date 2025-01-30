@@ -36,6 +36,8 @@ The transcripts of frames extracted from a video are usually fragmented and can 
 
 ## Steps 3a and Step 3b: Run a multimodal RAG system as a chain in LangChain
 
+![Gradio Web Interface](Images/gradio_interface.png)
+
 - The `RunnableParallel` primitive is essentially a dict whose values are runnables (or things that can be coerced to runnables, like functions). It runs all of its values in parallel, and each value is called with the overall input of the `RunnableParallel`. The final return value is a dict with the results of each value under its appropriate key.
 - The `RunnablePassthrough` on its own allows to pass inputs unchanged. This is typically used in conjunction with `RunnableParallel` to pass data through to a new key in the map.
 - The `RunnableLambda` converts a Python function into a runnable. Wrapping a function in a `RunnableLambda` makes the function usable within either a sync or async context.
