@@ -1,5 +1,9 @@
 This repository contains my implementation of a **Multimodal Retrieval-Augmented Generation (RAG) system for video content interaction**, developed as part of the [Multimodal RAG: Chat with Videos](https://www.deeplearning.ai/short-courses/multimodal-rag-chat-with-videos/) course by DeepLearning.AI in collaboration with Intel. The system enables **intelligent querying and interaction with video content** using **multimodal AI techniques**, including video frame extraction, transcription, multimodal embedding, and retrieval.
 
+# Multimodal Retrieval-Augmented Generation (RAG) system for video content interaction
+
+![Multimodal RAG System Architecture](Images/mm_rag.png)
+
 ## Certificate of Completion
 
 I successfully completed the course! You can view my certificate [here](https://learn.deeplearning.ai/accomplishments/12b98ae0-cf49-4aa6-bb0a-7431fa9232a7?usp=sharing).
